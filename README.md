@@ -24,7 +24,7 @@
 
 ## 欢迎使用与测评
 
-欢迎你试用 V1.0.1，并在 [GitHub Issues](https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench/issues) 中反馈真实的运营体验、使用场景和改进建议。特别希望了解：
+欢迎你试用 V1.0.1，并在 [GitHub Issues](https://github.com/cedric123123/Get-some-cash-ai-workbench/issues) 中反馈真实的运营体验、使用场景和改进建议。特别希望了解：
 
 1. 哪个模块最贴近日常店铺运营，哪个流程还不够顺手；
 2. 你希望导入哪些数据字段、报表或平台映射；
@@ -38,8 +38,8 @@
 需要 Node.js 18+。
 
 ```bash
-git clone https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench.git
-cd gaoqian-ai-ecommerce-ops-workbench
+git clone https://github.com/cedric123123/Get-some-cash-ai-workbench.git
+cd Get-some-cash-ai-workbench
 npm start
 ```
 

@@ -29,8 +29,8 @@ Run regression tests with `npm test`.
 Node.js 18+ is required.
 
 ```bash
-git clone https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench.git
-cd gaoqian-ai-ecommerce-ops-workbench
+git clone https://github.com/cedric123123/Get-some-cash-ai-workbench.git
+cd Get-some-cash-ai-workbench
 npm start
 ```
 
@@ -45,7 +45,7 @@ You are warmly welcome to try V1.0.1 and share practical feedback. Useful evalua
 3. What should be prioritized before official, read-only platform integrations are added.
 4. Any usability issue, confusing wording, visual defect, or incorrect assumption.
 
-Please use [GitHub Issues](https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench/issues) for reproducible problems and feature ideas. Never include platform passwords, cookies, API tokens, private customer details, or screenshots containing sensitive data.
+Please use [GitHub Issues](https://github.com/cedric123123/Get-some-cash-ai-workbench/issues) for reproducible problems and feature ideas. Never include platform passwords, cookies, API tokens, private customer details, or screenshots containing sensitive data.
 
 ## Roadmap
 

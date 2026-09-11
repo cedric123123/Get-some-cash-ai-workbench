@@ -13,12 +13,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench.git"
+    "url": "git+https://github.com/cedric123123/Get-some-cash-ai-workbench.git"
   },
   "bugs": {
-    "url": "https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench/issues"
+    "url": "https://github.com/cedric123123/Get-some-cash-ai-workbench/issues"
   },
-  "homepage": "https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench#readme",
+  "homepage": "https://github.com/cedric123123/Get-some-cash-ai-workbench#readme",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
