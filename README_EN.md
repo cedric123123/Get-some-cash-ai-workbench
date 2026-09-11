@@ -1,6 +1,6 @@
 # Gaoqian Office — AI E-commerce Operations Workbench
 
-> **V1.0.0** · A local-first workbench for Taobao/Tmall, Pinduoduo, and JD sellers.
+> **V1.0.1** · A local-first workbench for Taobao/Tmall, Pinduoduo, and JD sellers.
 
 [简体中文](README.md)
 
@@ -18,9 +18,13 @@ Gaoqian Office brings the daily operating surface of a Chinese e-commerce busine
 
 ## Important boundary
 
-V1.0.0 is an interactive local prototype with demo data and local CSV parsing. It does not call Taobao, Pinduoduo, or JD APIs; it does not collect credentials or cookies; and it never changes prices, listings, orders, or any other external platform data.
+The new store API page persists registered stores and synchronized data in the backend. The Taobao read-only connector is implemented but requires an approved application and a valid merchant token; it has not been tested against a live store. Pinduoduo and JD are explicitly unavailable pending endpoint verification. Credentials are supplied only through server environment variables. The original dashboard, tasks and CSV views remain a separate in-memory demo. No marketplace write operations are implemented. See [setup and scope](docs/api-setup.md).
 
 ## Quick start
+
+V1.0.1 adds a two-step CSV import: preview valid records and row errors, then confirm. It supports quoted commas, multiline fields, escaped quotes and UTF-8 BOM. Invalid numbers, unknown platforms and duplicate IDs are reported instead of silently rewritten. Missing quantities remain unknown. Files must be UTF-8 CSV and no larger than 5 MB. Only product and competitor imports are implemented; order, metric and XLSX imports are not supported yet. Data still resets on page reload.
+
+Run regression tests with `npm test`.
 
 Node.js 18+ is required.
 
@@ -34,7 +38,7 @@ Then open [http://127.0.0.1:4173](http://127.0.0.1:4173). On Windows, you can al
 
 ## Welcome to try and evaluate
 
-You are warmly welcome to try V1.0.0 and share practical feedback. Useful evaluation topics include:
+You are warmly welcome to try V1.0.1 and share practical feedback. Useful evaluation topics include:
 
 1. Whether the main operating flow fits your store's daily workflow.
 2. Which data-import fields, product mappings, or competitor-monitoring views are missing.
@@ -52,4 +56,4 @@ Please use [GitHub Issues](https://github.com/cedric123123/gaoqian-ai-ecommerce-
 
 ## Version
 
-See [CHANGELOG.md](CHANGELOG.md) for V1.0.0 notes.
+See [CHANGELOG.md](CHANGELOG.md) for V1.0.1 notes.

@@ -7,7 +7,7 @@ const toastStack = document.querySelector('#toast-stack');
 const STATE = {
   view: 'dashboard',
   platform: 'all',
-  taskCount: 6,
+  taskCount: 4,
   products: [
     { id: 'S-240901', name: '云感防晒霜 SPF50+ 50ml', platform: 'tb', sales: 1286, stock: 342, conversion: '5.82%', status: 'good', risk: '正常', thumb: 'warm' },
     { id: 'S-240919', name: '真丝睡眠眼罩 · 雾粉色', platform: 'pd', sales: 996, stock: 48, conversion: '4.36%', status: 'watch', risk: '低库存', thumb: 'pink' },
@@ -50,6 +50,7 @@ const PLATFORM = {
 };
 
 const viewMeta = {
+  stores: { title: '店铺接口', subtitle: '官方 API 店铺数据与同步状态' },
   dashboard: { title: '经营总览', subtitle: '把商品、活动、履约与内容经营收进同一个决策面板。' },
   products: { title: '商品与库存', subtitle: '统一 SKU，分别维护淘宝、拼多多和京东的商品映射与健康度。' },
   campaigns: { title: '营销活动', subtitle: '查看活动节奏、预算效率与待审批的价格动作。' },
@@ -177,14 +178,14 @@ function taskMiniList() {
 }
 
 function productMiniList() {
-  return STATE.products.slice(0, 3).map(product => `<div class="product-mini">${thumb(product.thumb)}<div class="product-mini-copy"><strong>${escapeHtml(product.name)}</strong><span>销量 ${product.sales.toLocaleString()} · <b class="stock ${product.stock < 80 ? 'low' : ''}">库存 ${product.stock}</b></span></div><span class="platform-tag ${PLATFORM[product.platform].className}">${PLATFORM[product.platform].label}</span></div>`).join('');
+  return STATE.products.slice(0, 3).map(product => `<div class="product-mini">${thumb(product.thumb)}<div class="product-mini-copy"><strong>${escapeHtml(product.name)}</strong><span>销量 ${Number.isFinite(product.sales) ? product.sales.toLocaleString() : '待核验'} · <b class="stock ${Number.isFinite(product.stock) && product.stock < 80 ? 'low' : ''}">库存 ${Number.isFinite(product.stock) ? product.stock : '待核验'}</b></span></div><span class="platform-tag ${PLATFORM[product.platform].className}">${PLATFORM[product.platform].label}</span></div>`).join('');
 }
 
 function productTable(products, context) {
   const empty = `<tr><td colspan="8"><div class="empty-row">没有匹配的商品。试试调整搜索条件或平台筛选。</div></td></tr>`;
   return `<table class="data-table"><thead><tr><th>商品</th><th>渠道</th><th>近 30 天销量</th><th>库存</th><th>转化率</th><th>状态</th><th>风险提示</th><th></th></tr></thead><tbody>${products.length ? products.map(product => `<tr>
       <td><div class="product-cell">${thumb(product.thumb)}<div><div class="product-name">${escapeHtml(product.name)}</div><div class="sku">${escapeHtml(product.id)}</div></div></div></td>
-      <td>${platformTag(product.platform)}</td><td>${product.sales.toLocaleString()}</td><td><span class="${product.stock < 80 ? 'stock low' : 'stock'}">${product.stock}</span></td><td>${product.conversion}</td><td>${statusTag(product.status)}</td><td><span class="risk-tag ${product.risk !== '正常' ? 'high' : ''}">${product.risk}</span></td><td><button class="row-action" data-toast="已打开 ${escapeHtml(product.name)} 的经营详情">查看</button></td>
+      <td>${platformTag(product.platform)}</td><td>${Number.isFinite(product.sales) ? product.sales.toLocaleString() : '待核验'}</td><td><span class="${Number.isFinite(product.stock) && product.stock < 80 ? 'stock low' : 'stock'}">${Number.isFinite(product.stock) ? product.stock : '待核验'}</span></td><td>${escapeHtml(product.conversion)}</td><td>${statusTag(product.status)}</td><td><span class="risk-tag ${product.risk !== '正常' ? 'high' : ''}">${product.risk}</span></td><td><button class="row-action" data-toast="已打开 ${escapeHtml(product.name)} 的经营详情">查看</button></td>
     </tr>`).join('') : empty}</tbody></table>`;
 }
 
@@ -267,13 +268,13 @@ function displayCompetitorPrice(price) {
 }
 
 function competitorTable(items) {
-  if (!items.length) return '<div class="empty-row">当前筛选条件下没有竞品。你可以添加商品链接、导入清单或切换平台。</div>';
+  if (!items.length) return '<div class="competitor-table"><div class="empty-row">当前筛选条件下没有竞品。你可以添加商品链接、导入清单或切换平台。</div></div>';
   return `<div class="competitor-table">${items.map(item => `<article class="competitor-row">
     <div class="competitor-product">${thumb(item.thumb)}<div class="competitor-product-copy"><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.brand)} · ${escapeHtml(item.id)}</span><div class="competitor-tags">${item.tags.map(tag => `<i>${escapeHtml(tag)}</i>`).join('')}</div></div></div>
     <div class="competitor-platform">${platformTag(item.platform)}<span>${escapeHtml(item.observedAt)} 快照</span></div>
     <div class="competitor-price"><strong class="${Number.isFinite(item.price) ? '' : 'unverified-price'}">${displayCompetitorPrice(item.price)}</strong>${Number.isFinite(item.price) ? priceChange(item.change) : '<span class="price-change flat">未提供展示价格</span>'}</div>
     <div class="competitor-sales"><strong>${item.sales}</strong><span>评价 ${item.rating}</span></div>
-    <div class="competitor-action">${competitorStatus(item.status)}<button class="row-action" data-competitor-detail="${item.id}">查看快照</button></div>
+    <div class="competitor-action">${competitorStatus(item.status)}<button class="row-action" data-competitor-detail="${escapeHtml(item.id)}">查看快照</button></div>
   </article>`).join('')}</div>`;
 }
 
@@ -295,14 +296,14 @@ function renderCompetitors() {
   return `${titleBlock('competitors')}
   <section class="competitor-disclaimer"><span class="competitor-disclaimer-mark">◉</span><span><strong>演示监测模式</strong>：当前卡片来自本地样例快照。正式接入应显示数据来源、抓取/同步时间、可访问范围与平台授权状态，不能将推断当作实时竞品事实。</span><button class="text-link" data-open-modal="competitor-import">配置数据源 →</button></section>
   <section class="metric-grid competitor-metrics">
-    ${metricCard('监测竞品', String(STATE.competitors.length + 13), '3 个本周新增', 'violet', 'M2 19 10 16 17 17 25 10 34 13 43 7 55 6')}
+    ${metricCard('监测竞品', String(items.length), '3 个本周新增', 'violet', 'M2 19 10 16 17 17 25 10 34 13 43 7 55 6')}
     ${metricCard('价格变动', '6', '2 个值得跟进', 'orange', 'M2 7 11 10 19 8 26 12 34 13 43 17 55 18', true)}
     ${metricCard('活动与内容更新', '3', '近 24 小时', 'mint', 'M2 16 10 14 17 11 26 12 35 6 44 8 55 4')}
     ${metricCard('可验证机会', '4', '建议人工复核', 'blue', 'M2 18 10 16 18 13 26 12 34 9 43 9 55 5')}
   </section>
   <section class="competitor-layout">
     <article class="card competitor-radar-card"><div class="card-pad"><div class="card-header"><div><h2 class="card-title">价格与活动雷达</h2><p class="card-subtitle">相同/近似商品的公开展示信息对比；价格趋势需结合规格、赠品、券后价和运费解读。</p></div>${platformFilter()}</div><div class="competitor-legend"><span><i class="own"></i>我们的防晒霜 ¥119</span><span><i class="rival-a"></i>森呼吸 ¥109</span><span><i class="rival-b"></i>同类低价带 ¥79</span></div>${competitorPriceChart()}</div><div class="competitor-chart-footer"><span>最后更新：今天 09:18 · 本地演示数据</span><button class="text-link" data-toast="价格轨迹已标记为待验证，尚未生成任何改价建议">查看比较规则</button></div></article>
-    <aside class="card competitor-watch-card card-pad"><div class="card-header"><div><h2 class="card-title">今日需要关注</h2><p class="card-subtitle">从变动中筛出可复核事项</p></div><span class="watch-count">3</span></div><div class="watch-list"><div class="watch-item"><span class="watch-icon orange">↓</span><div><strong>${escapeHtml(biggestDrop.name)}</strong><span>券后/标价出现下调，先核对规格与活动机制。</span></div><button class="text-link" data-competitor-detail="${biggestDrop.id}">快照</button></div><div class="watch-item"><span class="watch-icon violet">✦</span><div><strong>洁面品类出现新内容结构</strong><span>竞品新增“成分解释 + 使用步骤”模块，可作为内容调研线索。</span></div><button class="text-link" data-open-modal="competitor">记录</button></div><div class="watch-item"><span class="watch-icon mint">⌁</span><div><strong>保温杯价带保持稳定</strong><span>当前差异主要来自材质、容量和售后承诺，不建议仅因标价跟随。</span></div><button class="text-link" data-toast="已加入保温杯的观察说明">标记</button></div></div></aside>
+    <aside class="card competitor-watch-card card-pad"><div class="card-header"><div><h2 class="card-title">今日需要关注</h2><p class="card-subtitle">从变动中筛出可复核事项</p></div><span class="watch-count">3</span></div><div class="watch-list"><div class="watch-item"><span class="watch-icon orange">↓</span><div><strong>${escapeHtml(biggestDrop.name)}</strong><span>券后/标价出现下调，先核对规格与活动机制。</span></div><button class="text-link" data-competitor-detail="${escapeHtml(biggestDrop.id)}">快照</button></div><div class="watch-item"><span class="watch-icon violet">✦</span><div><strong>洁面品类出现新内容结构</strong><span>竞品新增“成分解释 + 使用步骤”模块，可作为内容调研线索。</span></div><button class="text-link" data-open-modal="competitor">记录</button></div><div class="watch-item"><span class="watch-icon mint">⌁</span><div><strong>保温杯价带保持稳定</strong><span>当前差异主要来自材质、容量和售后承诺，不建议仅因标价跟随。</span></div><button class="text-link" data-toast="已加入保温杯的观察说明">标记</button></div></div></aside>
   </section>
   <section class="card competitor-list-card"><div class="table-toolbar"><div><h2>竞品监测清单</h2><p class="card-subtitle">共 ${items.length} 个当前可见商品 · 按平台、类目或自定义标签建立监测组</p></div><div class="search-box">⌕<input id="competitor-search" placeholder="搜索竞品、店铺或标签" /></div><button class="text-link" data-open-modal="competitor">＋ 添加</button></div>${competitorTable(items)}</section>
   <section class="competitor-opportunity-grid"><article class="card opportunity-card"><div class="opportunity-icon violet">⌁</div><div><span class="eyebrow">价格机会</span><h3>防晒霜价带出现 ¥10 下探</h3><p>先比对规格、赠品、优惠券与评价样本，再决定是否建立价格模拟任务。</p><button class="text-link" data-open-modal="task">创建复核任务 →</button></div></article><article class="card opportunity-card"><div class="opportunity-icon mint">✦</div><div><span class="eyebrow">内容机会</span><h3>眼罩竞品强调「礼盒感」与送礼场景</h3><p>可在不复制竞品素材的前提下，为自己的详情页建立差异化故事板。</p><button class="text-link" data-view-link="content">进入内容工坊 →</button></div></article><article class="card opportunity-card"><div class="opportunity-icon orange">✓</div><div><span class="eyebrow">监测规则</span><h3>每个判断都需要保留来源和时间</h3><p>把公开页面快照、价格构成、规格和人工结论一起保存，避免错误跟价。</p><button class="text-link" data-open-modal="competitor-import">管理数据源 →</button></div></article></section>`;
@@ -310,7 +311,7 @@ function renderCompetitors() {
 
 function renderIntegrations() {
   const statusText = { online: '已启用', pending: '待连接', offline: '未启用' };
-  return `${titleBlock('integrations')}
+  return `${titleBlock('integrations')}<section class="card view-card" style="margin-bottom:16px"><h2>真实店铺 API 接入</h2><p>在店铺接口页登记店铺、查看服务端配置状态并同步官方数据。下方保留原型连接说明。</p><button class="button primary" data-view-link="stores">进入店铺接口 →</button></section>
   <section class="view-grid"><article class="card view-card"><div class="card-header"><div><h2>数据连接器</h2><p class="card-subtitle">默认只读。真实的订单、商品、库存等写入能力取决于平台 AppKey、权限范围和店铺授权。</p></div><span class="status-tag watch">3 个待授权</span></div><div class="integration-list">${STATE.integrations.map(integration => `<div class="integration-row"><span class="platform-logo ${integration.type === 'csv' ? 'taobao' : integration.type}">${integration.abbreviation}</span><span class="integration-status ${integration.status === 'online' ? '' : integration.status === 'offline' ? 'offline' : 'pending'}"></span><div class="integration-copy"><strong>${integration.name}</strong><span>${integration.description}</span></div><span class="status-tag ${integration.status === 'online' ? 'good' : 'watch'}">${statusText[integration.status]}</span><button class="button small" data-connect="${integration.key}">${integration.status === 'online' ? '管理' : '开始配置'}</button></div>`).join('')}</div></article><aside class="card view-card"><h2>安全接入原则</h2><p>工作台不会用演示数据伪装成平台同步；授权边界会明确呈现。</p><div class="settings-list"><div class="setting-row"><span class="setting-icon">1</span><div class="setting-copy"><strong>最小权限</strong><span>按需申请商品、订单、库存、物流等 scope。</span></div></div><div class="setting-row"><span class="setting-icon">2</span><div class="setting-copy"><strong>先只读，后写入</strong><span>先验证数据读取和差异预览，再开放有副作用操作。</span></div></div><div class="setting-row"><span class="setting-icon">3</span><div class="setting-copy"><strong>审计与重试</strong><span>记录请求、结果、失败原因和幂等标识。</span></div></div></div></aside></section>
   <section class="section-grid" style="margin-top:15px"><article class="card feature-card"><span class="feature-icon">⇩</span><h3>先从文件导入开始</h3><p>支持把现有报表作为本地数据源，验证字段映射和经营看板。</p><button class="text-link" data-open-modal="import">导入 CSV →</button></article><article class="card feature-card mint-bg"><span class="feature-icon">⟁</span><h3>统一适配器层</h3><p>淘宝、拼多多、京东各自保留协议差异，但输出统一的业务对象。</p><button class="text-link" data-toast="适配器设计已写入 README">查看架构 →</button></article><article class="card feature-card orange-bg"><span class="feature-icon">✓</span><h3>写入操作审批</h3><p>上架、改价、发货等动作必须经过预览、确认和结果回执。</p><button class="text-link" data-view-link="tasks">进入审批队列 →</button></article></section>`;
 }
@@ -321,10 +322,19 @@ function renderSettings() {
 }
 
 function render() {
+  if (STATE.view === 'stores') {
+    viewCrumb.textContent = viewMeta.stores.title;
+    document.querySelectorAll('.nav-item[data-view]').forEach(item => item.classList.toggle('active', item.dataset.view === STATE.view));
+    StoreUI.mount(app);
+    return;
+  }
+  if (typeof StoreUI !== 'undefined') StoreUI.unmount();
   const renderers = { dashboard: renderDashboard, products: renderProducts, campaigns: renderCampaigns, content: renderContent, orders: renderOrders, tasks: renderTasks, insights: renderInsights, competitors: renderCompetitors, integrations: renderIntegrations, settings: renderSettings };
   app.innerHTML = renderers[STATE.view]();
   viewCrumb.textContent = viewMeta[STATE.view].title;
   document.querySelectorAll('.nav-item[data-view]').forEach(item => item.classList.toggle('active', item.dataset.view === STATE.view));
+  document.querySelector('[data-view="tasks"] .nav-count').textContent = STATE.tasks.filter(task => task.state !== 'done').length;
+  document.querySelector('[data-view="competitors"] .nav-count').textContent = STATE.competitors.length;
   bindViewEvents();
 }
 
@@ -355,9 +365,10 @@ function bindViewEvents() {
   if (dashboardSearch) dashboardSearch.addEventListener('input', event => {
     const query = event.target.value.trim().toLowerCase();
     const productTableContainer = dashboardSearch.closest('.table-card');
-    const match = filteredProducts().filter(product => `${product.name} ${product.id}`.toLowerCase().includes(query));
+    const match = filteredProducts().filter(product => `${product.name} ${escapeHtml(product.id)}`.toLowerCase().includes(query));
     const table = productTableContainer.querySelector('table');
     table.outerHTML = productTable(match, 'dashboard');
+    productTableContainer.querySelectorAll('[data-toast]').forEach(button => button.addEventListener('click', () => toast(button.dataset.toast)));
   });
   const competitorSearch = app.querySelector('#competitor-search');
   if (competitorSearch) competitorSearch.addEventListener('input', event => {
@@ -367,7 +378,7 @@ function bindViewEvents() {
     const table = app.querySelector('.competitor-table');
     if (table) {
       table.outerHTML = competitorTable(match);
-      app.querySelectorAll('[data-competitor-detail]').forEach(button => button.addEventListener('click', () => openModal('competitor-detail', button.dataset.competitorDetail)));
+      app.querySelectorAll('.competitor-table [data-competitor-detail]').forEach(button => button.addEventListener('click', () => openModal('competitor-detail', button.dataset.competitorDetail)));
     }
   });
 }
@@ -422,11 +433,11 @@ function campaignModal() {
 }
 
 function creativeModal() {
-  return modalFrame('创建内容任务', '先生成策略与版式草稿。涉及功效、认证、对比、销量等声明时，请补充可验证的证据后再发布。', `<form class="modal-form" id="creative-form"><div class="field"><label for="creative-product">选择商品</label><select id="creative-product">${STATE.products.map(product => `<option value="${product.id}">${escapeHtml(product.name)}</option>`).join('')}</select></div><div class="form-row"><div class="field"><label for="creative-platform">目标平台</label><select id="creative-platform"><option>淘宝 / 天猫详情页</option><option>拼多多商品图</option><option>京东主图与详情页</option></select></div><div class="field"><label for="creative-output">素材套数</label><select id="creative-output"><option>5 张主图 + 8 屏详情页</option><option>5 张主图变体</option><option>商品种草图文 6 张</option></select></div></div><div class="field"><label for="creative-audience">目标人群与重点卖点</label><input id="creative-audience" maxlength="120" placeholder="例如：通勤肌、轻薄防晒、清爽不粘腻" /></div><div class="modal-footer"><button type="button" class="button" data-modal-close>取消</button><button class="button primary" type="submit">创建策略草稿</button></div></form>`);
+  return modalFrame('创建内容任务', '先生成策略与版式草稿。涉及功效、认证、对比、销量等声明时，请补充可验证的证据后再发布。', `<form class="modal-form" id="creative-form"><div class="field"><label for="creative-product">选择商品</label><select id="creative-product">${STATE.products.map(product => `<option value="${escapeHtml(product.id)}">${escapeHtml(product.name)}</option>`).join('')}</select></div><div class="form-row"><div class="field"><label for="creative-platform">目标平台</label><select id="creative-platform"><option>淘宝 / 天猫详情页</option><option>拼多多商品图</option><option>京东主图与详情页</option></select></div><div class="field"><label for="creative-output">素材套数</label><select id="creative-output"><option>5 张主图 + 8 屏详情页</option><option>5 张主图变体</option><option>商品种草图文 6 张</option></select></div></div><div class="field"><label for="creative-audience">目标人群与重点卖点</label><input id="creative-audience" maxlength="120" placeholder="例如：通勤肌、轻薄防晒、清爽不粘腻" /></div><div class="modal-footer"><button type="button" class="button" data-modal-close>取消</button><button class="button primary" type="submit">创建策略草稿</button></div></form>`);
 }
 
 function importModal() {
-  return modalFrame('从本地文件导入', '支持 CSV 表格的演示导入：商品名称、SKU、平台、销量、库存、转化率。文件仅在此浏览器会话内读取。', `<form class="modal-form" id="import-form"><div class="field"><label for="import-file">选择 CSV 文件</label><input id="import-file" type="file" accept=".csv,text/csv" /></div><div class="field"><label for="import-type">导入类型</label><select id="import-type"><option value="products">商品与库存</option><option value="orders">订单与履约</option><option value="metrics">经营指标</option></select></div><div class="empty-row" id="import-preview">未选择文件。你也可以保留演示数据继续体验工作台。</div><div class="modal-footer"><button type="button" class="button" data-modal-close>取消</button><button class="button primary" type="submit">导入并预览</button></div></form>`);
+  return modalFrame('从本地文件导入', '支持 CSV 表格的演示导入：商品名称、SKU、平台、销量、库存、转化率。文件仅在此浏览器会话内读取。', `<form class="modal-form" id="import-form"><div class="field"><label for="import-file">选择 CSV 文件</label><input id="import-file" type="file" accept=".csv,text/csv" /></div><div class="field"><label for="import-type">导入类型</label><select id="import-type"><option value="products">商品与库存</option><option value="orders" disabled>订单与履约（暂未支持）</option><option value="metrics" disabled>经营指标（暂未支持）</option></select></div><div class="empty-row" id="import-preview">未选择文件。你也可以保留演示数据继续体验工作台。</div><div class="modal-footer"><button type="button" class="button" data-modal-close>取消</button><button class="button primary" type="submit">读取并预览</button></div></form>`);
 }
 
 function connectModal(context) {
@@ -447,7 +458,7 @@ function competitorModal() {
 }
 
 function competitorImportModal() {
-  return modalFrame('导入竞品监测清单', '支持本地 CSV：商品名称、店铺/品牌、平台、价格、标签。文件只在此浏览器会话解析；不会执行外部抓取脚本。', `<form class="modal-form" id="competitor-import-form"><div class="field"><label for="competitor-import-file">选择 CSV 文件</label><input id="competitor-import-file" type="file" accept=".csv,text/csv" /></div><div class="field"><label for="competitor-import-mode">数据来源标记</label><select id="competitor-import-mode"><option>人工公开页面记录</option><option>已授权的只读连接器导出</option><option>内部选品调研表</option></select></div><div class="empty-row" id="competitor-import-preview">未选择文件。推荐先导入人工复核过的公开信息，再建立后续同步规则。</div><div class="modal-footer"><button type="button" class="button" data-modal-close>取消</button><button class="button primary" type="submit">导入并建立快照</button></div></form>`);
+  return modalFrame('导入竞品监测清单', '支持本地 CSV：商品名称、店铺/品牌、平台、价格、标签。文件只在此浏览器会话解析；不会执行外部抓取脚本。', `<form class="modal-form" id="competitor-import-form"><div class="field"><label for="competitor-import-file">选择 CSV 文件</label><input id="competitor-import-file" type="file" accept=".csv,text/csv" /></div><div class="field"><label for="competitor-import-mode">数据来源标记</label><select id="competitor-import-mode"><option>人工公开页面记录</option><option>已授权的只读连接器导出</option><option>内部选品调研表</option></select></div><div class="empty-row" id="competitor-import-preview">未选择文件。推荐先导入人工复核过的公开信息，再建立后续同步规则。</div><div class="modal-footer"><button type="button" class="button" data-modal-close>取消</button><button class="button primary" type="submit">读取并预览</button></div></form>`);
 }
 
 function competitorDetailModal(id) {
@@ -505,29 +516,7 @@ function bindModalEvents(kind, context) {
     closeModal(); switchView('content'); toast('内容策略草稿已创建，尚未调用任何图像或平台服务');
   });
 
-  const importFile = modalRoot.querySelector('#import-file');
-  const importPreview = modalRoot.querySelector('#import-preview');
-  if (importFile) importFile.addEventListener('change', () => {
-    const file = importFile.files[0];
-    if (!file) return;
-    importPreview.textContent = `已选择 ${file.name}（${Math.ceil(file.size / 1024)} KB）。提交后仅解析本地 CSV。`;
-  });
-  const importForm = modalRoot.querySelector('#import-form');
-  if (importForm) importForm.addEventListener('submit', event => {
-    event.preventDefault();
-    const file = importFile.files[0];
-    const importType = modalRoot.querySelector('#import-type').value;
-    if (!file) { toast('请先选择一个 CSV 文件'); return; }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const lines = String(reader.result).split(/\r?\n/).filter(Boolean);
-      const added = importType === 'products' ? addCsvProducts(lines) : 0;
-      closeModal();
-      if (importType === 'products') { switchView('products'); toast(`已解析 ${Math.max(lines.length - 1, 0)} 行，新增 ${added} 个商品草稿`); }
-      else { toast(`已读取 ${Math.max(lines.length - 1, 0)} 行 ${importType === 'orders' ? '订单' : '指标'} 数据；完整字段映射将在连接器模块提供`); }
-    };
-    reader.readAsText(file, 'utf-8');
-  });
+  bindCsvImport('import', 'products');
 
   modalRoot.querySelectorAll('[data-choice]').forEach(choice => choice.addEventListener('click', () => {
     modalRoot.querySelectorAll('[data-choice]').forEach(item => item.classList.toggle('selected', item === choice));
@@ -587,67 +576,71 @@ function bindModalEvents(kind, context) {
     closeModal(); switchView('competitors'); toast('竞品监测草稿已保存，等待补充可靠来源与快照时间');
   });
 
-  const competitorImportFile = modalRoot.querySelector('#competitor-import-file');
-  const competitorImportPreview = modalRoot.querySelector('#competitor-import-preview');
-  if (competitorImportFile) competitorImportFile.addEventListener('change', () => {
-    const file = competitorImportFile.files[0];
-    if (!file) return;
-    competitorImportPreview.textContent = `已选择 ${file.name}（${Math.ceil(file.size / 1024)} KB）。提交后仅解析本地 CSV，不会运行其中的代码或外部链接。`;
+  bindCsvImport('competitor-import', 'competitors');
+}
+
+function bindCsvImport(prefix, kind) {
+  const form = modalRoot.querySelector('#' + prefix + '-form');
+  if (!form) return;
+  const input = form.querySelector('input[type="file"]');
+  const preview = form.querySelector('#' + prefix + '-preview');
+  const button = form.querySelector('button[type="submit"]');
+  let prepared = null, revision = 0, busy = false;
+  input.addEventListener('change', () => {
+    revision++;
+    prepared = null;
+    button.textContent = '读取并预览';
+    preview.textContent = input.files[0] ? '已选择 ' + input.files[0].name + '，点击读取并预览。' : '未选择文件。';
   });
-  const competitorImportForm = modalRoot.querySelector('#competitor-import-form');
-  if (competitorImportForm) competitorImportForm.addEventListener('submit', event => {
+  form.addEventListener('submit', async event => {
     event.preventDefault();
-    const file = competitorImportFile.files[0];
+    if (busy) return;
+    if (prepared) {
+      const added = commitCsvRecords(prepared.records, kind);
+      closeModal();
+      switchView(kind === 'products' ? 'products' : 'competitors');
+      toast('已导入 ' + added + ' 条记录；跳过 ' + prepared.errors.length + ' 条问题记录');
+      return;
+    }
+    const file = input.files[0];
     if (!file) { toast('请先选择一个 CSV 文件'); return; }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const lines = String(reader.result).split(/\r?\n/).filter(Boolean);
-      const added = addCsvCompetitors(lines);
-      closeModal(); switchView('competitors'); toast(`已解析 ${Math.max(lines.length - 1, 0)} 行，新增 ${added} 个竞品监测草稿`);
-    };
-    reader.readAsText(file, 'utf-8');
+    if (file.size > 5 * 1024 * 1024) { preview.textContent = '文件不能超过 5 MB，请拆分后导入。'; return; }
+    const currentRevision = revision;
+    busy = true;
+    button.disabled = true;
+    try {
+      const text = await file.text();
+      if (!form.isConnected || revision !== currentRevision) return;
+      prepared = CommerceCsv.prepare(text, kind, STATE[kind].map(item => item.id));
+      const issues = prepared.errors.slice(0, 8).map(error => '<li>第 ' + error.line + ' 行：' + escapeHtml(error.message) + '</li>').join('');
+      const sample = prepared.records.slice(0, 5).map(item => '<li>' + escapeHtml(item.name) + ' · ' + PLATFORM[item.platform].label + ' · ' + (kind === 'competitors' ? displayCompetitorPrice(item.price) : '库存 ' + (item.stock ?? '待核验')) + '</li>').join('');
+      preview.innerHTML = '<strong>共 ' + prepared.total + ' 条，可导入 ' + prepared.records.length + ' 条，问题 ' + prepared.errors.length + ' 条</strong>' +
+        (sample ? '<p>数据预览（前 5 条）</p><ul>' + sample + '</ul>' : '') +
+        (issues ? '<p>以下问题行将跳过，请修改原文件后重选：</p><ul>' + issues + '</ul>' + (prepared.errors.length > 8 ? '<p>仅显示前 8 条问题。</p>' : '') : '') +
+        '<p>确认前不会更改清单。缺失数值保留为待核验。</p>';
+      button.textContent = '确认导入 ' + prepared.records.length + ' 条';
+      if (!prepared.records.length) { prepared = null; button.textContent = '重新读取'; }
+    } catch (error) {
+      prepared = null;
+      preview.textContent = '未导入：' + error.message;
+    } finally {
+      busy = false;
+      button.disabled = false;
+    }
   });
 }
 
-function addCsvProducts(lines) {
-  if (lines.length < 2) return 0;
-  const headers = lines[0].split(',').map(value => value.trim().toLowerCase());
-  const get = (values, names) => { const index = headers.findIndex(header => names.includes(header)); return index >= 0 ? values[index]?.trim() : ''; };
+function commitCsvRecords(records, kind) {
   let added = 0;
-  lines.slice(1).forEach((line, index) => {
-    const values = line.split(',');
-    const name = get(values, ['name', '商品名称', '商品']) || `导入商品 ${index + 1}`;
-    const id = get(values, ['sku', '商品sku', '内部sku']) || `IMPORT-${Date.now().toString().slice(-5)}-${index + 1}`;
-    if (STATE.products.some(product => product.id === id)) return;
-    const rawPlatform = get(values, ['platform', '平台']).toLowerCase();
-    const platform = rawPlatform.includes('拼') || rawPlatform.includes('pdd') ? 'pd' : rawPlatform.includes('京') || rawPlatform.includes('jd') ? 'jd' : 'tb';
-    const numeric = value => Number(String(value || '').replace(/[^\d.]/g, '')) || 0;
-    STATE.products.unshift({ id, name, platform, sales: numeric(get(values, ['sales', '销量'])), stock: numeric(get(values, ['stock', '库存'])), conversion: get(values, ['conversion', '转化率']) || '—', status: 'watch', risk: '导入待核验', thumb: platform === 'pd' ? 'pink' : platform === 'jd' ? 'blue' : 'warm' });
-    added += 1;
-  });
-  return added;
-}
-
-function addCsvCompetitors(lines) {
-  if (lines.length < 2) return 0;
-  const headers = lines[0].split(',').map(value => value.trim().toLowerCase());
-  const get = (values, names) => { const index = headers.findIndex(header => names.includes(header)); return index >= 0 ? values[index]?.trim() : ''; };
-  let added = 0;
-  lines.slice(1).forEach((line, index) => {
-    const values = line.split(',');
-    const name = get(values, ['name', '商品名称', '商品', '竞品名称']) || `导入竞品 ${index + 1}`;
-    const rawPlatform = get(values, ['platform', '平台']).toLowerCase();
-    const platform = rawPlatform.includes('拼') || rawPlatform.includes('pdd') ? 'pd' : rawPlatform.includes('京') || rawPlatform.includes('jd') ? 'jd' : 'tb';
-    const rawPrice = get(values, ['price', '价格', '展示价格']);
-    const parsedPrice = Number(String(rawPrice).replace(/[^\d.]/g, ''));
-    const price = rawPrice && Number.isFinite(parsedPrice) && parsedPrice > 0 ? parsedPrice : null;
-    const brand = get(values, ['brand', '店铺', '品牌', '店铺/品牌']) || '导入待核验';
-    const id = get(values, ['id', '竞品id', 'sku']) || `C-IMPORT-${Date.now().toString().slice(-5)}-${index + 1}`;
-    if (STATE.competitors.some(item => item.id === id)) return;
-    const tags = (get(values, ['tags', '标签', '监测标签']) || '导入').split(/[/，,]/).map(tag => tag.trim()).filter(Boolean).slice(0, 3);
-    STATE.competitors.unshift({ id, name, brand, platform, price, change: 0, sales: '待核验', rating: '—', status: 'stable', observedAt: '导入待核验', thumb: platform === 'pd' ? 'pink' : platform === 'jd' ? 'blue' : 'warm', tags });
-    added += 1;
-  });
+  for (const record of records) {
+    const id = record.id || (kind === 'products' ? 'IMPORT-' : 'C-IMPORT-') + crypto.randomUUID();
+    if (STATE[kind].some(item => item.id === id)) continue;
+    const thumb = record.platform === 'pd' ? 'pink' : record.platform === 'jd' ? 'blue' : 'warm';
+    STATE[kind].unshift(kind === 'products'
+      ? { ...record, id, thumb, status: 'watch', risk: '导入待核验' }
+      : { ...record, id, thumb, change: 0, sales: '待核验', rating: '—', status: 'stable', observedAt: '导入待核验' });
+    added++;
+  }
   return added;
 }
 

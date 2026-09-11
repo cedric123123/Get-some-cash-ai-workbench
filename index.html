@@ -15,14 +15,14 @@
             <svg viewBox="0 0 28 28" fill="none"><path d="M14 2.6 23.8 8v12L14 25.4 4.2 20V8L14 2.6Z" stroke="currentColor" stroke-width="2"/><path d="m8.5 15 3.2 3.2 7.8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <span>搞钱事务所</span>
-          <span class="beta">V1.0.0</span>
+          <span class="beta">V1.0.1</span>
         </div>
 
         <div class="workspace-switcher">
           <div class="avatar avatar-gradient">映</div>
           <div class="workspace-copy">
             <strong>映山好物旗舰店</strong>
-            <span>全渠道经营空间</span>
+            <span>演示经营空间 · 真实数据见店铺接口</span>
           </div>
           <button class="icon-button quiet" aria-label="切换工作空间" data-toast="工作空间切换器即将开放">⌄</button>
         </div>
@@ -40,6 +40,7 @@
           <button class="nav-item" data-view="insights"><span class="nav-icon">⌁</span><span>数据洞察</span></button>
           <button class="nav-item" data-view="competitors"><span class="nav-icon">◉</span><span>竞品监控</span><span class="nav-count">18</span></button>
           <button class="nav-item" data-view="integrations"><span class="nav-icon">⟁</span><span>平台连接</span></button>
+          <button class="nav-item" data-view="stores"><span class="nav-icon">⇄</span><span>店铺接口</span><span class="nav-dot"></span></button>
         </nav>
 
         <div class="sidebar-bottom">
@@ -73,6 +74,8 @@
     <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
     <div class="modal-backdrop" id="modal-backdrop" aria-hidden="true"></div>
     <div class="modal-root" id="modal-root"></div>
+    <script src="csv.js"></script>
+    <script src="store-ui.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
