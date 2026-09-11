@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111827" />
+    <title>搞钱事务所 · 中国电商</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 28 28" fill="none"><path d="M14 2.6 23.8 8v12L14 25.4 4.2 20V8L14 2.6Z" stroke="currentColor" stroke-width="2"/><path d="m8.5 15 3.2 3.2 7.8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span>搞钱事务所</span>
+          <span class="beta">V1.0.0</span>
+        </div>
+
+        <div class="workspace-switcher">
+          <div class="avatar avatar-gradient">映</div>
+          <div class="workspace-copy">
+            <strong>映山好物旗舰店</strong>
+            <span>全渠道经营空间</span>
+          </div>
+          <button class="icon-button quiet" aria-label="切换工作空间" data-toast="工作空间切换器即将开放">⌄</button>
+        </div>
+
+        <nav class="navigation" aria-label="主导航">
+          <p class="nav-label">运营中心</p>
+          <button class="nav-item active" data-view="dashboard"><span class="nav-icon">⌂</span><span>经营总览</span></button>
+          <button class="nav-item" data-view="products"><span class="nav-icon">◇</span><span>商品与库存</span><span class="nav-count">12</span></button>
+          <button class="nav-item" data-view="campaigns"><span class="nav-icon">↗</span><span>营销活动</span></button>
+          <button class="nav-item" data-view="content"><span class="nav-icon">✦</span><span>内容工坊</span><span class="nav-dot"></span></button>
+          <button class="nav-item" data-view="orders"><span class="nav-icon">▣</span><span>订单与履约</span></button>
+
+          <p class="nav-label nav-space">智能运营</p>
+          <button class="nav-item" data-view="tasks"><span class="nav-icon">✓</span><span>任务与审批</span><span class="nav-count amber">6</span></button>
+          <button class="nav-item" data-view="insights"><span class="nav-icon">⌁</span><span>数据洞察</span></button>
+          <button class="nav-item" data-view="competitors"><span class="nav-icon">◉</span><span>竞品监控</span><span class="nav-count">18</span></button>
+          <button class="nav-item" data-view="integrations"><span class="nav-icon">⟁</span><span>平台连接</span></button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <button class="nav-item" data-view="settings"><span class="nav-icon">⚙</span><span>设置</span></button>
+          <div class="agent-card">
+            <div class="agent-orbit"></div>
+            <div class="agent-card-copy">
+              <span>小星智能助手</span>
+              <strong><i></i> 今日已节省 2.4h</strong>
+            </div>
+            <button class="icon-button" aria-label="打开助手" data-open-modal="assistant">→</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <button class="mobile-menu icon-button" id="mobile-menu" aria-label="打开导航">☰</button>
+          <div class="breadcrumb"><span id="view-crumb">经营总览</span><span class="crumb-divider">/</span><span>2026 年 09 月</span></div>
+          <div class="top-actions">
+            <button class="date-button" data-toast="已切换至近 30 天数据"><span>◷</span> 近 30 天 <span>⌄</span></button>
+            <button class="icon-button notification" aria-label="通知" data-toast="你有 6 条待处理提醒">♧<em>6</em></button>
+            <button class="avatar avatar-photo" aria-label="账户菜单" data-toast="当前用户：林映"></button>
+          </div>
+        </header>
+
+        <section id="app-content" class="content" aria-live="polite"></section>
+      </main>
+    </div>
+
+    <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+    <div class="modal-backdrop" id="modal-backdrop" aria-hidden="true"></div>
+    <div class="modal-root" id="modal-root"></div>
+    <script src="app.js"></script>
+  </body>
+</html>

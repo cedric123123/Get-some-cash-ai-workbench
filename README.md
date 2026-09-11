@@ -1,0 +1,133 @@
+# 搞钱事务所-AI电商运营工作台
+
+> **V1.0.0** · 面向淘宝 / 天猫、拼多多、京东的本地优先 AI 电商运营工作台。
+
+[English Introduction](README_EN.md)
+
+## 中文简介
+
+**搞钱事务所**把商品、库存、活动、内容、履约、竞品、洞察和审批收进一个清晰的运营界面，帮助电商团队先看清经营事实、再组织可复核的行动。它适合做日常运营看板、商品与内容策划、活动前检查、任务协同，以及竞品公开信息的结构化研究。
+
+> V1.0.0 是可交互的本地原型：内置演示数据和本地 CSV 读取；**不会**调用淘宝、拼多多或京东接口，不上传文件、不保存凭证，也不会产生任何平台写入操作。
+
+## 能做什么
+
+- 统一查看 GMV、订单、转化、ROI、渠道健康度和商品经营信号。
+- 用主商品、SKU 和平台映射的思路管理淘宝 / 拼多多 / 京东商品与库存。
+- 建立活动计划、价格/毛利前检查和人工审批任务，而非直接改价。
+- 从商品事实、卖点、人群和合规要求出发，规划主图、详情页和内容素材。
+- 聚合履约、售后和 SLA 风险，形成待办与复核队列。
+- 通过带时间戳的公开信息快照，观察竞品价格、活动和内容变化；缺失价格会明确标成“待核验”。
+- 为未来官方、最小权限、只读的平台连接器预留明确的能力边界。
+
+## 欢迎使用与测评
+
+欢迎你试用 V1.0.0，并在 [GitHub Issues](https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench/issues) 中反馈真实的运营体验、使用场景和改进建议。特别希望了解：
+
+1. 哪个模块最贴近日常店铺运营，哪个流程还不够顺手；
+2. 你希望导入哪些数据字段、报表或平台映射；
+3. 竞品监控、内容工坊、活动和审批中最希望优先完善的能力；
+4. 可复现的 Bug、界面问题或不符合实际业务的假设。
+
+请勿在 Issue、截图或日志中提交密码、Cookie、API token、买家个人信息或其他敏感店铺数据。
+
+## 快速开始
+
+需要 Node.js 18+。
+
+```bash
+git clone https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench.git
+cd gaoqian-ai-ecommerce-ops-workbench
+npm start
+```
+
+打开 [http://127.0.0.1:4173](http://127.0.0.1:4173)。
+
+## 已实现的工作台模块
+
+- **经营总览**：GMV、订单、转化、ROI、趋势图、渠道健康度、商品经营雷达。
+- **商品与库存**：统一 SKU 主数据、渠道映射概念、库存与内容健康提示。
+- **营销活动**：活动计划、预算/价格前检查、利润与审批边界说明。
+- **内容工坊**：商品事实 → 人群与卖点 → 素材策略 → 合规审核的可视化工作流。
+- **订单与履约**：待发货、售后和 SLA 风险的统一队列。
+- **任务与审批**：新增任务、审核看板、将来写入动作的预览/审批/留痕模型。
+- **数据洞察**：明确标记数据完整度的建议卡，避免把推测当作经营事实。
+- **竞品监控**：公开信息快照、价格/活动/内容变动、机会卡、人工复核任务、手动添加与本地 CSV 监测清单导入。
+- **平台连接**：淘宝、拼多多、京东、CSV 的能力状态；默认只读/导入优先。
+- **设置**：低库存、价格利润、履约 SLA、内容合规等例行任务开关。
+
+## 交互说明
+
+- 可在顶部「新建任务」中创建本地任务，立即出现在总览待办中。
+- 可创建商品主数据、活动计划或内容策略草稿；活动和内容任务会进入审核队列。
+- 「从本地文件导入」可读取 CSV。商品导入支持常见列名：`name` / `商品名称`、`sku` / `商品SKU`、`platform` / `平台`、`sales` / `销量`、`stock` / `库存`、`conversion` / `转化率`。
+- 「竞品监控」可录入公开展示商品或导入 CSV；支持 `name` / `商品名称`、`brand` / `店铺` / `品牌`、`platform` / `平台`、`price` / `价格`、`tags` / `标签`。缺少或脱敏的价格会显示为“待核验”，不会被错误写成 ¥0。
+- 所有平台连接按钮只保存**演示级连接草稿**，不接收 AppKey、token 或店铺凭据。
+
+## 推荐的生产架构
+
+```text
+淘宝 / 拼多多 / 京东 / CSV
+          │
+          ▼
+  只读连接器与导入器 ──► 规范化业务模型
+                               │
+    商品主数据 ────────────────┼──► 内容/活动/履约/洞察
+    平台 Listing 与 SKU 映射 ──┤
+    订单 / 售后 / 快照 ─────────┤
+                               ▼
+                ActionPlan → 人工审批 → 平台执行器 → 回执/审计
+```
+
+建议的核心实体：`Store`、`PlatformAccount`、`MasterProduct`、`ChannelListing`、`SKU`、`Order`、`AfterSaleCase`、`InventorySnapshot`、`MetricSnapshot`、`CreativeAsset`、`ActionPlan`、`Approval`、`ImportRun` 与 `AuditEvent`。
+
+每一笔数据应包含 `source`、`sourceId`、`syncedAt`、`completeness` 和原始平台 ID。这样，AI 生成的建议可以清楚地区分“已验证事实”“导入数据”和“推断”。
+
+## 接入原则
+
+真实接入必须在服务端完成，并遵循：
+
+1. 先申请官方 App、OAuth 与最小 scope，连接器默认只读。
+2. 先实现导入、查询、数据完整性和差异预览，再考虑写入。
+3. 上架、下架、改价、报名、发货、自动回复等有外部副作用的操作必须走 `ActionPlan → 独立人工审批 → 执行 → 回执`。
+4. 服务器侧保管密钥；不要沿用浏览器 `localStorage` 保存团队级 API Key 的做法。
+5. 记录限流、幂等键、重试、失败原因和可审计快照；不要用 Playwright 模拟卖家后台作为正式连接方式。
+
+官方平台入口（接入前需逐项核验现行权限与审核要求）：[淘宝商家后台系统接入](https://developer.alibaba.com/docs/doc.htm?articleId=101564&docType=1&treeId=1)、[淘宝 OAuth](https://developer.alibaba.com/docs/doc.htm?articleId=102635&docType=1&treeId=1)、[拼多多开放平台](https://open.yangkeduo.com/)、[京东开发者中心](https://jos.jd.com/)。
+
+## 竞品模块的安全边界
+
+竞品闭环为：`监测组 / 自家商品 → 竞品清单 → 带来源的快照 → 价格/活动/内容异常 → 人工复核任务 → 自家方案`。它不会直接触发跟价、上架、改价或任何平台写入。
+
+提供的 `pdd-goods-fetch-v5.2-quality-fixes.zip` 与 `pdd-price.zip` 已仅作静态审阅：其中的关键词候选、商品快照、价格趋势、评论分层、数据完整度和任务状态概念适合独立实现为工作台的数据契约；但 Cookie、Chrome CDP 登录态复用、`anti_content` 捕获、内部接口访问与未鉴权的本地 Cookie 服务均不会嵌入或执行。正式版只接受人工录入、CSV/JSON 导入，或后续由服务器保存密钥的官方最小权限只读连接器。
+
+正式记录建议补充 `source`、`observedAt`、`evidenceUrl`、`verificationStatus`、规格、券后价、运费、赠品与单位价。评论、昵称和图片属于敏感或受版权约束的数据，应最小化保存、脱敏并设置保留期限。
+
+## 参考项目与吸收方向
+
+本原型没有拷贝以下项目的代码；它们用于调研产品边界、工作流和后续可独立实现的架构模式。引入任何第三方代码前仍应单独复核许可证、版本和安全性。
+
+| 项目 | 借鉴点 |
+| --- | --- |
+| [qihangerp-cloud](https://github.com/retail-ecommerce/qihangerp-cloud) | 多店铺、SKU 关联、订单、物流、售后、库存和同步日志的 ERP 领域建模。 |
+| [mcp-cn-commerce](https://github.com/TonyWang-hub/mcp-cn-commerce) | 每个平台独立适配器、共享限流/重试/脱敏、默认只读的 Agent 连接器边界。 |
+| [ai-ops-auto](https://github.com/PeterGuy326/ai-ops-auto) | 计划摘要、独立审批、不可变快照、幂等账本和执行留痕。 |
+| [MxPage](https://github.com/ziguishian/MxPage) | 商品图分析、详情页规划、批量后台任务和内容生产体验。 |
+| [1click-ecom-detailpage](https://github.com/coolqoo/1click-ecom-detailpage) | 卖点卡、风格锁定、主图/详情页分镜、逐图提示词和合规审核流程。 |
+| [product-ai-listing-studio](https://github.com/pkp666/product-ai-listing-studio) | 规范化商品事实、平台字段映射和“发布前草稿包”思路。 |
+| [shopify-admin-skills](https://github.com/40RTY-ai/shopify-admin-skills) | 低库存、价格异常、履约 SLA、退款、财务等例行巡检，以及 dry-run 后确认的操作模式。 |
+
+## 下一步
+
+1. 用 SQLite/PostgreSQL 落地核心实体、导入历史、任务与审计日志。
+2. 开发 CSV/XLSX 导入向导：字段映射、数据去重、预览、错误报告和回滚。
+3. 建立规范化的只读平台适配器和连接健康页，分别验证淘宝、拼多多、京东的官方授权和 scope。
+4. 接入内容生成服务时将商品事实、素材证据、Prompt、版本和审核结果关联存储。
+5. 最后才在人工审批、幂等与回执齐备的前提下评估各个平台的写入操作。
+
+## 文件
+
+- `index.html`：应用骨架。
+- `styles.css`：响应式视觉系统。
+- `app.js`：交互、演示数据、本地 CSV 读取与页面状态。
+- `server.js`：零依赖本地静态服务器。

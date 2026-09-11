@@ -1,0 +1,26 @@
+{
+  "name": "gaoqian-ai-ecommerce-ops-workbench",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Gaoqian Office — a local-first AI e-commerce operations workbench for Taobao, Pinduoduo and JD sellers.",
+  "keywords": [
+    "ai",
+    "ecommerce",
+    "taobao",
+    "pinduoduo",
+    "jd",
+    "operations-workbench"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench/issues"
+  },
+  "homepage": "https://github.com/cedric123123/gaoqian-ai-ecommerce-ops-workbench#readme",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  }
+}
