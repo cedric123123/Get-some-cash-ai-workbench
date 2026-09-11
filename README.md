@@ -103,19 +103,6 @@ npm start
 
 正式记录建议补充 `source`、`observedAt`、`evidenceUrl`、`verificationStatus`、规格、券后价、运费、赠品与单位价。评论、昵称和图片属于敏感或受版权约束的数据，应最小化保存、脱敏并设置保留期限。
 
-## 参考项目与吸收方向
-
-本原型没有拷贝以下项目的代码；它们用于调研产品边界、工作流和后续可独立实现的架构模式。引入任何第三方代码前仍应单独复核许可证、版本和安全性。
-
-| 项目 | 借鉴点 |
-| --- | --- |
-| [qihangerp-cloud](https://github.com/retail-ecommerce/qihangerp-cloud) | 多店铺、SKU 关联、订单、物流、售后、库存和同步日志的 ERP 领域建模。 |
-| [mcp-cn-commerce](https://github.com/TonyWang-hub/mcp-cn-commerce) | 每个平台独立适配器、共享限流/重试/脱敏、默认只读的 Agent 连接器边界。 |
-| [ai-ops-auto](https://github.com/PeterGuy326/ai-ops-auto) | 计划摘要、独立审批、不可变快照、幂等账本和执行留痕。 |
-| [MxPage](https://github.com/ziguishian/MxPage) | 商品图分析、详情页规划、批量后台任务和内容生产体验。 |
-| [1click-ecom-detailpage](https://github.com/coolqoo/1click-ecom-detailpage) | 卖点卡、风格锁定、主图/详情页分镜、逐图提示词和合规审核流程。 |
-| [product-ai-listing-studio](https://github.com/pkp666/product-ai-listing-studio) | 规范化商品事实、平台字段映射和“发布前草稿包”思路。 |
-| [shopify-admin-skills](https://github.com/40RTY-ai/shopify-admin-skills) | 低库存、价格异常、履约 SLA、退款、财务等例行巡检，以及 dry-run 后确认的操作模式。 |
 
 ## 下一步
 
